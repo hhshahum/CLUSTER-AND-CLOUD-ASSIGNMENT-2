@@ -69,7 +69,7 @@ def tweetcollector(index):
   print(index)
   auth = tweepy.OAuthHandler(listofallapi1[index]["API_KEY"], listofallapi1[index]["API_SECRET"])
   auth.set_access_token(listofallapi1[index]["ACCESS_TOKEN"], listofallapi1[index]["ACCESS_TOKEN_SECRET"])
-  #api=tweepy.API(auth,wait_on_rate_limit=True,wait_on_rate_limit_notify=True)
+  tweepy.API(auth,wait_on_rate_limit=True,wait_on_rate_limit_notify=True)
   while True:
     try:
       stream = tweepy.Stream(auth, l)
