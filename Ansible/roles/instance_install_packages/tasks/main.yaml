@@ -14,8 +14,3 @@
   pip:
     name: ['couchdb']
     state: latest
-
-- name: Install dos2unix
-  apt:
-    name: ['dos2unix']
-    state: latest
