@@ -6,3 +6,4 @@
 
   roles:
     - role: instance_common
+    - role: instance_install_packages

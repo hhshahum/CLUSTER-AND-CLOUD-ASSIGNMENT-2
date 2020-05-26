@@ -1,33 +1,22 @@
 ---
 
-- name: System Update
+- name: Docker - Apt Update
   apt:
     update_cache: yes
     upgrade: dist
 
-- name: Install packages to allow apt to use a repository over HTTPS
-  apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gnupg-agent
-      - software-properties-common
-    state: latest
-
-- name: Add Docker’s official GPG key
+- name: Docker - Add Docker’s official GPG key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
-
-- name: Set up the stable repository
+- name: Docker - Set up the stable repository
   apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
     state: present
     filename: docker
 
-- name: Install the latest version of Docker CE and containerd
+- name: Docker - Install the latest version of Docker CE and containerd
   apt:
     name:
       - docker-ce
@@ -36,24 +25,18 @@
     update_cache: yes
     state: latest
 
-- name: Start Docker
+- name: Docker - Start Docker
   systemd:
     state: started
     name: docker
 
-- name: Create config directory
-  file:
-    path: /etc/systemd/system/docker.service.d
-    state: directory
-    mode: 0766
-
-- name: Create config file
+- name: Docker - Create proxy config file
   file:
     path: /etc/systemd/system/docker.service.d/http-proxy.conf
     state: touch
     mode: 0766
 
-- name: Setup proxy for docker
+- name: Docker - Setup proxy
   lineinfile:
     path: /etc/systemd/system/docker.service.d/http-proxy.conf
     line: "{{ item }}"
@@ -61,7 +44,13 @@
     - '[Service]'
     - 'Environment="http_proxy=http://wwwproxy.unimelb.edu.au:8000" "https_proxy=http://wwwproxy.unimelb.edu.au:8000" "ftp_proxy=http://wwwproxy.unimelb.edu.au:8000" "no_proxy=localhost,127.0.0.1,127.0.1.1,ubuntu"'
 
-- name: Flush changes and restart docker
+- name: Docker - Construct config directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: 0766
+
+- name: Docker - Restart docker
   systemd:
     daemon_reload: yes
     state: restarted

@@ -1,0 +1,13 @@
+---
+- hosts: webserver
+  become: yes
+  gather_facts: true
+  roles:
+    - role: setup_apache
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+
+
+
+

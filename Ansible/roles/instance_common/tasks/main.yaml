@@ -1,4 +1,3 @@
-#format and mount volume
 - name: Format Volume
   filesystem:
     fstype: ext4
@@ -22,27 +21,3 @@
     mode: 0777
     recurse: yes
     state: directory
-
-
-#install software
-- name: Install pip3
-  apt:
-    name: ['python3-pip']
-    state: latest
-    update_cache: yes
-
-- name: Update pip3
-  pip:
-    name: ['pip']
-    state: latest
-    executable: pip3
-
-- name: Install couchdb package
-  pip:
-    name: ['couchdb']
-    state: latest
-
-- name: Install dos2unix
-  apt:
-    name: ['dos2unix']
-    state: latest

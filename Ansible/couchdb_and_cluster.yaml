@@ -1,6 +1,6 @@
 ---
 
-- hosts: all
+- hosts: db_all
   become: yes
   roles:
     - install_couchdb

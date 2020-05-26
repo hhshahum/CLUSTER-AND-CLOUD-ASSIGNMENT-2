@@ -4,13 +4,13 @@ availability_zone: melbourne-qh2-uom
 
 #volume
 volumes:
-  - volume_name: vol1
+  - volume_name: volomn1
     vol_size: 50
-  - volume_name: vol2
+  - volume_name: volomn2
     vol_size: 50
-  - volume_name: vol3
+  - volume_name: volomn3
     vol_size: 50
-  - volume_name: vol4
+  - volume_name: volomn4
     vol_size: 50
 
 
@@ -34,14 +34,9 @@ security_groups:
     port_range_min: 5984
     port_range_max: 5984
     remote_ip_prefix: 0.0.0.0/0
-  - name: 8080_rule
-    description: "for web access"
-    protocol: tcp
-    port_range_min: 8080
-    port_range_max: 8080
-    remote_ip_prefix: 0.0.0.0/0
 
-security_groups_lists: [ssh_rule, http_rule, db_5984, 8080_rule, internal]
+
+security_groups_lists: [ssh_rule, http_rule, db_5984, internal]
 
 #Instances
 instance_names: [couchdb1, couchdb2, couchdb3, web]

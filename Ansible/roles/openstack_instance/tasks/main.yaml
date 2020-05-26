@@ -1,6 +1,6 @@
 ---
 
-- name: launch an instance
+- name: Create an instance
   os_server:
     state: present
     name: "{{ item.0 }}"
@@ -18,20 +18,19 @@
     - "{{ os_vol_ids }}"
   register: os_instance
 
-- name: create an IP list
+- name: Form an IP list file
   set_fact:
     ip_list: "{{ ip_list|default([]) + [ item.openstack.public_v4 ] }}"
   with_items: '{{ os_instance.results }}'
   when:
-   - os_instance.results[0].openstack is defined
-   - os_instance.results[1].openstack is defined
-   - os_instance.results[2].openstack is defined
-   - os_instance.results[3].openstack is defined
+   - os_instance.results[0].openstack is already defined
+   - os_instance.results[1].openstack is already defined
+   - os_instance.results[2].openstack is already defined
+   - os_instance.results[3].openstack is already defined
 
 - debug:
     msg: "Instance {{ ip_list }} have been created"
 
-# save IPs in local files
-- local_action: copy content="{{ ip_list }}" dest="./ip_address"
+- local_action: copy content="{{ ip_list }}" dest="./instance_ip_address"
 
 
