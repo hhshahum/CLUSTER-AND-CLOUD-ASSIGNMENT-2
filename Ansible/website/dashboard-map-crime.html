@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v4.0.1">
+    <title>Dashboard</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.js"
+      integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+      crossorigin="anonymous"></script>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
+	<script src="https://cdn.jsdelivr.net/npm/echarts@4.7.0/dist/echarts.min.js"></script>
+	<script src="https://unpkg.com/feather-icons"></script>
+	<script src="js/googlemap-crime.js"></script>
+    <!-- Bootstrap core CSS -->
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+	  #map { height: 770px; margin: 0; padding: 0; overflow: hidden; width: 100%;}
+	    .nicebox {
+	        position: absolute;
+	        text-align: center;
+	        font-family: "Roboto", "Arial", sans-serif;
+	        font-size: 13px;
+	        z-index: 5;
+	        box-shadow: 0 4px 6px -4px #333;
+	        /* padding: 5px 10px; */
+	        background: rgb(255,255,255);
+	        background: linear-gradient(to bottom,rgba(255,255,255,1) 0%,rgba(245,245,245,1) 100%);
+	        /* border: rgb(229, 229, 229) 1px solid; */
+	      }
+	    #controls {
+	        top: 15px;
+	        left: 200px;
+	        width: 360px;
+	        height: 20px;
+	      }
+	    #data-box {
+	        top: 10px;
+	        left: 500px;
+	        height: 45px;
+	        line-height: 45px;
+	        display: none;
+	      }
+	    #dataset {
+	        width: 360px;
+	        height: 20px;
+	      }
+	    #data-value { font-size: 2.0em; font-weight: bold }
+	    #data-label { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
+	    #data-label:after { content: ':' }
+	    #data-caret { margin-left: -5px; display: none; font-size: 14px; width: 14px}
+		#info-box {
+	  	        background-color: white;
+	  	        border: 1px solid black;
+	  	        bottom: 30px;
+	  	        height: 20px;
+	  	        padding: 10px;
+	  	        position: absolute;
+	  	        left: 30px;
+	  	      }
+		#showpic
+		    {
+		        display:none;
+		        border: solid 6px #fff;
+		        outline: solid 6px #888;  
+		        height:69%;
+		        width:48%;
+		        position:absolute;/*让节点脱离文档流,我的理解就是,从页面上浮出来,不再按照文档其它内容布局*/
+		        top:20%;/*节点脱离了文档流,如果设置位置需要用top和left,right,bottom定位*/
+		        left:25%;
+		        z-index:10;/*个人理解为层级关系,由于这个节点要在顶部显示,所以这个值比其余节点的都大*/
+		        background: white;
+				text-align: right;
+		    }
+		#over
+		    {
+		        width: 100%;
+		        height: 100%;
+		        opacity:0.8;/*设置背景色透明度,1为完全不透明,IE需要使用filter:alpha(opacity=80);*/
+		        filter:alpha(opacity=80);
+		        display: none;
+		        position:absolute;
+		        top:0;
+		        left:0;
+		        z-index:1;
+		        background: silver;
+		    }
+
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="css/dashboard.css" rel="stylesheet">
+  </head>
+<body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    	  <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#"> Group40 <span data-feather="smile"></span><span data-feather="users"></span></a>
+    	  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    		<span class="navbar-toggler-icon"></span>
+    	  </button>
+    	  <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+    	  <ul class="navbar-nav px-3">
+    		<li class="nav-item text-nowrap">
+    		  <a class="nav-link" href="#"><span data-feather="coffee"></span></a>
+    		</li>
+    	  </ul>
+      </nav>
+    
+    <div class="container-fluid">
+      <div class="row">
+    	<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    	  <div class="sidebar-sticky pt-3">
+    		<ul class="nav flex-column">
+				<li class="nav-item">
+						<a class="nav-link" href="introduction.html">
+						  <span data-feather="book-open"></span>
+						  intro of project
+						</a>
+				</li>
+				
+    		  <li class="nav-item">
+    			<a class="nav-link" href="dashboard.html">
+    			  <span data-feather="monitor"></span>
+    			  Monitor <span class="sr-only">(current)</span>
+    			</a>
+    		 </li>
+    
+    		 
+    		</ul>
+    
+    		<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+    		  <span>STORY of CRIME</span>
+    		  <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
+    			<span data-feather="plus-circle"></span>
+    		  </a>
+    		</h6>
+    		<ul class="nav flex-column mb-2">
+    			 <li class="nav-item">
+    			   <a class="nav-link active" href="dashboard-map-crime.html">
+    				 <span data-feather="map"></span>
+    				 Map
+    			   </a>
+    			 </li>
+    		</ul>
+    		
+    		<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+    		  <span>STORY of Discrimination</span>
+    		  <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
+    			<span data-feather="plus-circle"></span>
+    		  </a>
+    		</h6>
+    		<ul class="nav flex-column mb-2">
+    			 <li class="nav-item">
+    			   <a class="nav-link" href="dashboard-map-discri.html">
+    				 <span data-feather="map"></span>
+    				 Map
+    			   </a>
+    			</li>
+    		</ul>
+    	  </div>
+    	</nav>
+	 
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">The Map about Crime</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group mr-2">
+            <!-- Default dropleft button -->
+            <div class="btn-group dropdown">
+              <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            	Twitter Heatmap
+              </button>
+              <div class="dropdown-menu">
+            	<!-- Dropdown menu links -->
+            	<a class="dropdown-item" href="#" onclick="toggleHeatmap()">Toggle Heatmap</a>
+				<div class="dropdown-divider" ></div>
+            	<a class="dropdown-item" href="#" onclick="changeGradient()">Change gradient</a>
+            	<a class="dropdown-item" href="#" onclick="changeRadius()">Change radius</a>
+				<a class="dropdown-item" href="#" onclick="changeOpacity()">Change opacity</a>
+              </div>
+            </div>
+          </div>
+
+			  <div class="dropleft">
+			    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			    	Aurin Dataset
+			    </button>
+			    <span class="caret"></span>
+			    <ul class="dropdown-menu">
+				  <li class="dropdown-submenu">
+				    <a class="test list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="#">VIC<span class="caret"></span></a>
+				    <ul class="dropdown-menu" >
+				      <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2010.json">2010</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2011.json">2011</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2012.json">2012</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2013.json">2013</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2014.json">2014</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2015.json">2015</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2016.json">2016</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2017.json">2017</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2018.json">2018</a></li>
+					  <li><a class="loaddata list-group-item list-group-item-action list-group-item-primary" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/vic/new-vic/2019.json">2019</a></li>
+				    </ul>
+				  </li>
+				  
+			      <li class="dropdown-submenu">
+			        <a class="test list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="#">South Australia<span class="caret"></span></a>
+			        <ul class="dropdown-menu">
+			          <li class="dropdown-submenu">
+			            <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2010-2011<span class="caret"></span></a>
+			            <ul class="dropdown-menu">
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202010.json">Jul</a></li>
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202010.json">Aug</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202010.json">Sep</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202010.json">Opt</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202010.json">Nov</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202010.json">Dec</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202011.json">Jan</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202011.json">Feb</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202011.json">Mar</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202011.json">Apr</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202011.json">May</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202011.json">Jun</a></li>
+			            </ul>
+			          </li>
+					  <li class="dropdown-submenu">
+					    <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2011-2012<span class="caret"></span></a>
+					    <ul class="dropdown-menu">
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202011.json">Jul</a></li>
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202011.json">Aug</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202011.json">Sep</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202011.json">Opt</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202011.json">Nov</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202011.json">Dec</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202012.json">Jan</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202012.json">Feb</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202012.json">Mar</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202012.json">Apr</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202012.json">May</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202012.json">Jun</a></li>
+					    </ul>
+					  </li>
+					  <li class="dropdown-submenu">
+					    <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2012-2013<span class="caret"></span></a>
+					    <ul class="dropdown-menu">
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202012.json">Jul</a></li>
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202012.json">Aug</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202012.json">Sep</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202012.json">Opt</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202012.json">Nov</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202012.json">Dec</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202013.json">Jan</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202013.json">Feb</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202013.json">Mar</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202013.json">Apr</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202013.json">May</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202013.json">Jun</a></li>
+					    </ul>
+					  </li>
+					  <li class="dropdown-submenu">
+					    <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2013-2014<span class="caret"></span></a>
+					    <ul class="dropdown-menu">
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202013.json">Jul</a></li>
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202013.json">Aug</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202013.json">Sep</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202013.json">Opt</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202013.json">Nov</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202013.json">Dec</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202014.json">Jan</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202014.json">Feb</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202014.json">Mar</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202014.json">Apr</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202014.json">May</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202014.json">Jun</a></li>
+					    </ul>
+					  </li>
+					  <li class="dropdown-submenu">
+					    <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2014-2015<span class="caret"></span></a>
+					    <ul class="dropdown-menu">
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202014.json">Jul</a></li>
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202014.json">Aug</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202014.json">Sep</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202014.json">Opt</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202014.json">Nov</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202014.json">Dec</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202015.json">Jan</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202015.json">Feb</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202015.json">Mar</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202015.json">Apr</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202015.json">May</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202015.json">Jun</a></li>
+					    </ul>
+					  </li>
+					  <li class="dropdown-submenu">
+					    <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2015-2016<span class="caret"></span></a>
+					    <ul class="dropdown-menu">
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202015.json">Jul</a></li>
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202015.json">Aug</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202015.json">Sep</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202015.json">Opt</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202015.json">Nov</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202015.json">Dec</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202016.json">Jan</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202016.json">Feb</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202016.json">Mar</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202016.json">Apr</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202016.json">May</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202016.json">Jun</a></li>
+					    </ul>
+					  </li>
+					  <li class="dropdown-submenu">
+					    <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2016-2017<span class="caret"></span></a>
+					    <ul class="dropdown-menu">
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202016.json">Jul</a></li>
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202016.json">Aug</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202016.json">Sep</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202016.json">Opt</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202016.json">Nov</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202016.json">Dec</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202017.json">Jan</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202017.json">Feb</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202017.json">Mar</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202017.json">Apr</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202017.json">May</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202017.json">Jun</a></li>
+					    </ul>
+					  </li>
+					  <li class="dropdown-submenu">
+					    <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2017-2018<span class="caret"></span></a>
+					    <ul class="dropdown-menu">
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202017.json">Jul</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202017.json">Aug</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202017.json">Sep</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202017.json">Opt</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202017.json">Nov</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202017.json">Dec</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202018.json">Jan</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202018.json">Feb</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202018.json">Mar</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202018.json">Apr</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202018.json">May</a></li>
+							<li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202018.json">Jun</a></li>
+					    </ul>
+					  </li>
+					  <li class="dropdown-submenu">
+					    <a class="test list-group-item list-group-item-action list-group-item-info" href="#">2018-2019<span class="caret"></span></a>
+					    <ul class="dropdown-menu">
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jul%202018.json">Jul</a></li>
+			              <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Aug%202018.json">Aug</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Sep%202018.json">Sep</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Opt%202018.json">Opt</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Nov%202018.json">Nov</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Dec%202018.json">Dec</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jan%202019.json">Jan</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Feb%202019.json">Feb</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Mar%202019.json">Mar</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Apr%202019.json">Apr</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/May%202019.json">May</a></li>
+						  <li><a class="loaddata list-group-item list-group-item-action list-group-item-info" tabindex="-1" href="javascript:void(0);"  value="https://storage.googleapis.com/aurin_data/south_australia/south_australia--2010-2019/Jun%202019.json">Jun</a></li>
+					    </ul>
+					  </li>
+			        </ul>
+			      </li>
+			    </ul>
+			  </div>
+        </div>
+      </div>
+	  <div id="showpic">
+			<button type="button" class="btn-xs btn-info" onclick="changeChart()">Change the chart</button>
+	        <a href="javascript:hide()" style="color: grey; width: 30px; height: 30px;"><span data-feather="x-circle"></span></a>
+	        <div id="main" style="width:750px;height:550px;text-align: center;"></div>
+	  </div>
+	  <div id="over"></div>
+	  <div id="map"></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.dropdown-submenu a.test').on("click", function(e){
+    $(this).next('ul').toggle();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  $('.loaddata').on("click", function(){
+	a = $(this).attr("value")
+	loadMapShapes(a,false)
+  });
+});
+feather.replace()
+// show echartz by the pop-up window
+var showpic = document.getElementById('showpic');
+var over = document.getElementById('over');
+var changeChartFlag = false;
+function show()
+{
+	showpic.style.display = "block";
+	over.style.display = "block";
+}
+function hide()
+{
+	showpic.style.display = "none";
+	over.style.display = "none";
+}
+function changeChart(){
+	if(changeChartFlag == true){
+		changeChartFlag = false
+		myChart.clear();
+		 if((propertyArray[0]['name'] == 'non_agg_sex_assault') || (propertyArray[0]['name'] == 'serious_assault_result_injury')){
+			myChart.setOption({
+					title: {
+						text: 'Diffent Kinds of Crime Data',
+						subtext: saYear[0]["value"] + ' postcode: '+ postcode,
+						left: 'center'
+					},
+					tooltip: {
+						trigger: 'item',
+						formatter: '{a} <br/>{b} : {c} ({d}%)'
+					},
+					// legend: {
+					// 	orient: 'vertical',
+					// 	left: 'right',
+					// 	data: propertyName
+					// }, 
+					series: [
+						{
+							name: 'type',
+							type: 'pie',
+							radius: '65%',
+							center: ['50%', '62%'],
+							data: saProperty,
+							emphasis: {
+								itemStyle: {
+									shadowBlur: 300,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}
+					]
+			});
+		}else{
+			myChart.setOption({
+					title: {
+						text: 'Diffent Kinds of Crime Data',
+						subtext: 'Year of '+ propertyYear[0]["value"],
+						left: 'center'
+					},
+					tooltip: {
+						trigger: 'item',
+						formatter: '{a} <br/>{b} : {c} ({d}%)'
+					},
+					// legend: {
+					// 	orient: 'vertical',
+					// 	left: 'right',
+					// 	data: propertyName
+					// }, 
+					series: [
+						{
+							name: 'type',
+							type: 'pie',
+							radius: '65%',
+							center: ['50%', '62%'],
+							data: propertyArray,
+							emphasis: {
+								itemStyle: {
+									shadowBlur: 300,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}
+					]
+			});
+		}
+		
+
+	}else{
+		changeChartFlag = true
+		myChart.clear();
+		 if((propertyArray[0]['name'] == 'non_agg_sex_assault') || (propertyArray[0]['name'] == 'serious_assault_result_injury')){
+			myChart.setOption({
+					title: {
+						text: 'Diffent Kinds of Crime Data',
+						subtext: saYear[0]["value"] + ' postcode: '+ postcode[0]['value'],
+						left: 'center'
+					},
+				    xAxis: {
+				        type: 'category',
+				        data: barName,
+						show:false
+				    },
+				    yAxis: {
+				        type: 'value'
+				    },
+					tooltip: {
+						// trigger: 'axis',
+						formatter: '{a} <br/>{b} : {c}'
+					},
+					axisPointer:{
+						show:true
+					},
+				    series: [{
+				        data: barValue,
+				        type: 'bar',
+				        showBackground: true,
+				        backgroundStyle: {
+				            color: 'rgba(220, 220, 220, 0.8)'
+				        }
+				    }]
+			
+			});
+		}else{
+			myChart.setOption({
+					title: {
+						text: 'Sum of Diffent Kinds of Crime Data',
+						// subtext: 'Year of '+ propertyYear[0]["value"],
+						left: 'center'
+					},
+				    xAxis: {
+				        type: 'category',
+				        data: offencesName,
+						show:false
+				    },
+				    yAxis: {
+				        type: 'value'
+				    },
+					tooltip: {
+						// trigger: 'axis',
+						formatter: '{a} <br/>{b} : {c}'
+					},
+					axisPointer:{
+						show:true
+					},
+				    series: [{
+				        data: offencesValue,
+				        type: 'bar',
+				        showBackground: true,
+				        backgroundStyle: {
+				            color: 'rgba(220, 220, 220, 0.8)'
+				        }
+				    }]
+			
+			});
+		}
+		
+	}
+};
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDl2T7q94_F-jAenLxjCSbolhD1NBLywPo&callback=initMap&libraries=visualization&callback=initMap"></script>
+
+
+<script type="text/javascript">
+// echartz
+var myChart = echarts.init(document.getElementById('main'));
+
+// myChart.setOption(option);
+
+	
+</script>
+
